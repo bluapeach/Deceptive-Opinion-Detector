@@ -1,2 +1,2 @@
-# Deceptive-Opinion-Detector
+# Deceptive Opinion Detector
 한 호텔에 대한 진실과 거짓 리뷰를 모아놓은 데이터셋을 활용해서 리뷰 각 문장의 참 거짓을 예측할 수 있는 요인을 분리해낸 뒤, 각 요인들의 가중치를 최적화한 모델
