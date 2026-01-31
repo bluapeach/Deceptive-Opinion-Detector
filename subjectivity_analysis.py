@@ -31,4 +31,12 @@ for i in range(len(sentences)):
     else:
         emolist2.append(score)
 
-print(np.mean(emolist), np.mean(emolist2))
+mean1 = np.mean(emolist)
+mean2 = np.mean(emolist2)
+t_stat, p_val = stats.ttest_ind(emolist, emolist2)
+eff_size = cohen_d(emolist, emolist2)
+
+print(f"평균 (Truthful): {mean1:.4f}, 평균 (Deceptive): {mean2:.4f}")
+print(f"t-statistic: {t_stat:.4f}")
+print(f"p-value: {p_val:.4e}")
+print(f"Cohen's d: {eff_size:.4f}")
