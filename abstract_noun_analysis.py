@@ -59,24 +59,25 @@ for i in range(len(sentences)):
     abs_cnt = 0
     con_cnt = 0
     doc = nlp(sentences[i])
+    
+    # 1. 분모 정의 (문장부호 제외 단어 수)
+    length = sum(1 for w in doc if w.pos_ != 'PUNCT')
+    if length == 0: continue
+
+    # 2. 명사 분류 및 카운트
+    for w in doc:
+        if w.pos_ == 'NOUN':
+            if get_concreteness(w.text) == 'Abstract':
+                abs_cnt += 1
+            else:
+                con_cnt += 1
+    
     if labels[i] == 'truthful':
-        for w in doc:
-            if w.pos_ == 'NOUN':
-               if get_concreteness(w.text) == 'Abstract':
-                   abs_cnt += 1
-               else:
-                   con_cnt += 1
-        abs_list.append(abs_cnt)
-        con_list.append(con_cnt)
+        abs_list.append(abs_cnt / length)  # 개수가 아닌 비율 저장
+        con_list.append(con_cnt / length)
     else:
-        for w in doc:
-            if w.pos_ == 'NOUN':
-                if get_concreteness(w.text) == 'Abstract':
-                    abs_cnt += 1
-                else:
-                    con_cnt += 1
-        abs_list2.append(abs_cnt)
-        con_list2.append(con_cnt)
+        abs_list2.append(abs_cnt / length)
+        con_list2.append(con_cnt / length)
 
 print(f"진짜 리뷰 추상명사 평균: {np.mean(abs_list):.4f}")
 print(f"가짜 리뷰 추상명사평균: {np.mean(abs_list2):.4f}")
