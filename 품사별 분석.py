@@ -12,28 +12,6 @@ nltk.download('wordnet')
 nltk.download('omw-1.4')
 from nltk.corpus import wordnet as wn
 
-
-def get_concreteness(word):
-    # 단어의 명사뜻을 모두 가져옴
-    synsets = wn.synsets(word, pos=wn.NOUN)# 리스트 형태로 나옴
-
-    if not synsets:
-        return None  # 데이터에 없는 단어는 패스
-
-    # 가장 대표적인 의미의 카테고리를 가져옴 단어마다, 의미마다 카테고리있음
-    category = synsets[0].lexname()
-
-    # 추상적 명사들의 대표 카테고리 리스트
-    categories = [
-        'noun.attribute', 'noun.feeling', 'noun.cognition',
-        'noun.state', 'noun.communication', 'noun.relation', 'noun.motive'
-    ]
-
-    if category in categories:
-        return "Abstract"
-    else:
-        return "Concrete"
-
 df = pd.read_csv('C:/Users/bsj32/jupyter/deceptive-opinion.csv')
 def cohen_d(group1, group2):
     n1, n2 = len(group1), len(group2)
@@ -54,18 +32,20 @@ score = 0
 for i in range(len(sentences)):
     cnt = 0
     doc = nlp(sentences[i])
+    length = sum(1 for w in doc if w.pos_ != 'PUNCT')
+    
     if labels[i] == 'truthful':
-        score = [TextBlob(w.text).sentiment.subjectivity for w in doc if w.pos_ == 'ADJ']#이건 ADJ대신 측정하고싶은 품사 집어넣어서 돌리면 됨
-        if score:
-            pos_list.append(np.mean(score))
-        else:
-            pos_list.append(0)
+        for w in doc:
+            if w.pos_ == 'ADJ':
+                cnt  = cnt + 1
+            #이건 ADJ대신 측정하고싶은 품사 집어넣어서 돌리면 됨
+        pos_list.append(cnt/length)
     else:
-        score = [TextBlob(w.text).sentiment.subjectivity for w in doc if w.pos_ == 'ADJ']
-        if score:
-            pos_list2.append(np.mean(score))
-        else:
-            pos_list2.append(0)
+        for w in doc:
+            if w.pos_ == 'ADJ':
+                cnt  = cnt + 1
+            #이건 ADJ대신 측정하고싶은 품사 집어넣어서 돌리면 됨
+        pos_list2.append(cnt/length)
 
 print(np.mean(pos_list), np.mean(pos_list2))
 t_stat, p_val = stats.ttest_ind(pos_list, pos_list2)
